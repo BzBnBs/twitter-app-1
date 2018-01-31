@@ -5,4 +5,3 @@ module.exports = redirect => (req, res, next) => {
     res.redirect(redirect);
   }
 };
-

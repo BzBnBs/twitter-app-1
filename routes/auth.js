@@ -64,7 +64,7 @@ router.post('/login', (req, res, next) => {
           const error = 'usuario y password incorrectos';
           res.render('auth/login', { error });
         } else if (bcrypt.compareSync(password, user.password)) {
-          req.session.currentUser = user._id;
+          req.session.currentUser = user;
           res.redirect('/profile');
         } else {
           const error = 'usuario y password incorrectos';

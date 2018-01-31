@@ -1,3 +1,30 @@
-<h1>Profile</h1>
-<p>Welcome <%= username %></p>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Profile</h1>
+      <p>Welcome <%= username %></p>
+      <h3>Your Tweets</h3>
+    </div>
+  </div>
+  <div class="row">
+    <% tweets.forEach((tweet) => { %>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            Title
+          </div>
+          <div class="card-body">
+            <blockquote class="blockquote mb-0">
+              <p><%= tweet.tweet %></p>
+              <footer class="blockquote-footer">Author: <cite title="Source Title"><%= tweet.user_id.username %></cite></footer>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
 <a href="/logout">logout</a>
