@@ -5,7 +5,7 @@ const User = require('../models/user');
 const Tweet = require('../models/tweet');
 
 const authMiddleware = require('../middlewares/auth');
-/* GET home page. */
+
 router.get('/', (req, res, next) => {
   res.render('index', { title: 'Express' });
 });
@@ -19,7 +19,7 @@ router.get('/profile', authMiddleware('/login'), (req, res, next) => {
       if (err) {
         next(err);
       } else {
-        console.log('tweets', tweets)
+        console.log('tweets', tweets);
         res.render('profile', { username, tweets });
       }
     });
@@ -38,7 +38,7 @@ router.get('/timeline', authMiddleware('/login'), (req, res, next) => {
     })
     .catch((err) => {
       next(err)
-    })
+    });
 });
 
 module.exports = router;
