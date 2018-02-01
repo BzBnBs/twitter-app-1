@@ -1,18 +1,20 @@
-<h2>Signup</h2>
-
-<form action="/signup" method="POST" id="form-container">
-  <label for="username">Username</label>
-  <input type="text" name="username" placeholder="JonSnow">
-  <br>
-  <br>
-  <label for="password">Password</label>
-  <input type="password" name="password" placeholder="Your password">
-  <br>
-  <% if ( typeof(error) != "undefined") { %>
-    <div class="alert alert-danger" role="alert">
-      <%= error %>
+<div class="container">
+  <div class="row justify-content-md-center">
+    <div class="col-md-3">
+      <h2>Signup</h2>
+      
+      <form action="/signup" method="POST" id="form-container">
+        <label for="username">Username</label>
+        <input type="text" name="username" placeholder="JonSnow">
+        <br>
+        <br>
+        <label for="password">Password</label>
+        <input type="password" name="password" placeholder="Your password">
+        <br>
+        <%- include('../partials/notifications') %>
+        <br>
+        <button>Create account</button>
+      </form>
     </div>
-  <% } %>
-  <br>
-  <button>Create account</button>
-</form>
+  </div>
+</div>

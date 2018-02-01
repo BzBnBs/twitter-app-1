@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const bcryptSalt = 10;
+const passport = require('../middlewares/passport');
 
 const User = require('../models/user');
 
@@ -33,12 +34,12 @@ router.post('/signup', (req, res, next) => {
               res.redirect('/');
             })
             .catch((err) => {
-              const error = 'Problema al crear el usuario';
-              res.render('auth/signup', { error });
+              req.flash('error', 'Problema al crear el usuario')
+              res.redirect('/signup');
             });
         } else {
-          const error = 'Usuario ya existente';
-          res.render('auth/signup', { error });
+          req.flash('error', 'Usuario ya existente')
+          res.redirect('/signup')
         }
       })
       .catch((err) => {
@@ -48,41 +49,19 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.get('/login', (req, res, next) => {
-  res.render('auth/login');
+  res.render('auth/login', { message: req.flash('error') });
 });
 
-router.post('/login', (req, res, next) => {
-  const { username, password } = req.body;
-
-  if (username === '' || password === '') {
-    const error = 'Usuario y password no pueden estar vacios';
-    res.render('auth/login', { error });
-  } else {
-    User.findOne({ username })
-      .then((user) => {
-        if (!user) {
-          const error = 'usuario y password incorrectos';
-          res.render('auth/login', { error });
-        } else if (bcrypt.compareSync(password, user.password)) {
-          req.session.currentUser = user;
-          res.redirect('/profile');
-        } else {
-          const error = 'usuario y password incorrectos';
-          res.render('auth/login', { error });
-        }
-      });
-  }
-});
+router.post('/login', passport.authenticate('local', {
+  successRedirect: '/profile',
+  failureRedirect: '/login',
+  failureFlash: true,
+  passReqToCallback: true,
+}));
 
 router.get('/logout', (req, res, next) => {
-
-  req.session.destroy((err) => {
-    if (err) {
-      next(err);
-    } else {
-      res.redirect('/login');
-    }
-  });
+  req.logout();
+  res.redirect('/login');
 });
 
 module.exports = router;

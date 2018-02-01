@@ -8,6 +8,11 @@ const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const passport = require('./middlewares/passport');
+const flash = require('connect-flash');
+const notifications = require('./middlewares/notifications');
+// const passport = require('passport');
+// const LocalStrategy = require('passport-local').Strategy;
 
 const { url, db, port } = require('./config');
 
@@ -32,7 +37,13 @@ app.use(session({
     mongooseConnection: mongoose.connection,
     ttl: 24 * 60 * 60, // 1 day
   }),
+  resave: true,
+  saveUninitialized: true,
 }));
+
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -41,6 +52,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(notifications);
 
 app.use('/', auth);
 app.use('/', index);
