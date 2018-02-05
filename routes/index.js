@@ -50,30 +50,39 @@ router.get('/profile/:username', privacyMiddleware('/profile'), (req, res, next)
 });
 
 router.post('/profile/:username/follow', (req, res, next) => {
-  User
-    .findOne({ username: req.params.username }, '_id').exec((err, follow) => {
-      if (err) {
-        res.redirect(`/profile/${req.params.username}`);
-        return;
+  const usernameToFollow = req.params.username;
+  const currentUsername = req.session.currentUser.username;
+
+  console.log('usernameToFollow', usernameToFollow);
+  console.log('username of currentuser session', currentUsername);
+
+  User.findOne({ username: usernameToFollow }, '_id').exec((err, follow) => {
+    if (err) {
+      return res.redirect(`/profile/${req.params.username}`);
+    }
+    console.log('usernameToFollow ', follow);
+    User.findOne({ username: currentUsername }).exec((err, currentUser) => {
+      
+      
+      const followingIndex = currentUser.following.indexOf(follow._id.toString());
+      if (followingIndex > -1) {
+        console.log('1');
+        currentUser.following.splice(followingIndex, 1);
+      } else {
+        console.log('2', follow);
+        currentUser.following.push(follow._id);
+        console.log('this should not be -1:', followingIndex, ',because', currentUser.following[0], 'is equal to', follow._id);
       }
-
-      User
-        .findOne({ username: req.session.currentUser.username })
-        .exec((err, currentUser) => {
-          const followingIndex = currentUser.following.indexOf(follow._id);
-          if (followingIndex > -1) {
-            currentUser.following.splice(followingIndex, 1);
-          } else {
-            currentUser.following.push(follow._id);
-            console.log('this should not be -1:', followingIndex, ',because', currentUser.following[0], 'is equal to', follow._id);
-          }
-
-          currentUser.save((err) => {
-            req.session.currentUser = currentUser;
-            res.redirect(`/profile/${req.params.username}`);
-          });
-        });
+      currentUser.save((err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('3');
+          res.redirect(`/profile/${req.params.username}`);
+        }
+      });
     });
+  });
 });
 
 module.exports = router;
